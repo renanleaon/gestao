@@ -1,0 +1,89 @@
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro de Compras e Vendas</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="container mt-5">
+    <h2>Cadastro de Compras e Vendas</h2>
+
+    <!-- Caixa de seleção para escolher entre Compras e Vendas -->
+    <div class="mb-3">
+      <label for="selecaoTipo" class="form-label">Selecione o Tipo de Cadastro:</label>
+      <select id="selecaoTipo" class="form-select" onchange="mostrarFormulario()">
+        <option value="compras">Compra</option>
+        <option value="vendas">Venda</option>
+      </select>
+    </div>
+
+    <!-- Formulário de Cadastro de Compras -->
+    <div id="formCadastroCompras" class="form-content" style="display: none;">
+      <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="fornecedor" class="form-label">Fornecedor</label>
+          <select id="fornecedor" name="fornecedor" class="form-select" required>
+            {% for fornecedor in fornecedores %}
+            <option value="{{ fornecedor.id }}">{{ fornecedor.nome }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="valor_total_compra" class="form-label">Valor Total</label>
+          <input type="number" id="valor_total_compra" name="valor_total" class="form-control" required step="0.01">
+        </div>
+        <button type="submit" class="btn btn-primary">Cadastrar Compra</button>
+      </form>
+    </div>
+
+    <!-- Formulário de Cadastro de Vendas -->
+    <div id="formCadastroVendas" class="form-content" style="display: none;">
+      <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="cliente" class="form-label">Cliente</label>
+          <select id="cliente" name="cliente" class="form-select" required>
+            {% for cliente in clientes %}
+            <option value="{{ cliente.id }}">{{ cliente.nome }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="valor_total_venda" class="form-label">Valor Total</label>
+          <input type="number" id="valor_total_venda" name="valor_total" class="form-control" required step="0.01">
+        </div>
+        <button type="submit" class="btn btn-primary">Cadastrar Venda</button>
+      </form>
+    </div>
+
+    <a href="{% url 'index' %}" class="btn btn-secondary">Voltar</a>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Script para mostrar o formulário selecionado -->
+  <script>
+    function mostrarFormulario() {
+      var selecao = document.getElementById("selecaoTipo").value;
+      var formCadastroCompras = document.getElementById("formCadastroCompras");
+      var formCadastroVendas = document.getElementById("formCadastroVendas");
+
+      if (selecao === "compras") {
+        formCadastroCompras.style.display = "block";
+        formCadastroVendas.style.display = "none";
+      } else if (selecao === "vendas") {
+        formCadastroCompras.style.display = "none";
+        formCadastroVendas.style.display = "block";
+      }
+    }
+
+    // Exibir formulário padrão ao carregar a página
+    window.onload = function () {
+      mostrarFormulario();
+    };
+  </script>
+</body>
+
+</html>

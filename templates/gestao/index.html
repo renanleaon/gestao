@@ -1,0 +1,170 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Controle</title>
+  <!-- Link para o Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Link para o Font Awesome (ícones) -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <style>
+    /* Estilo para o cabeçalho */
+    .navbar {
+      background-color: #007bff;
+    }
+
+    .navbar-brand {
+      color: white;
+      font-weight: bold;
+    }
+
+    /* Estilo para a listagem */
+    .card {
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Estilo de fundo */
+    body {
+      background-color: #f4f6f9;
+    }
+
+    .container {
+      margin-top: 50px;
+    }
+
+    h2 {
+      color: #333;
+      font-weight: 600;
+    }
+
+    /* Espaçamento entre cards */
+    .card-body {
+      text-align: center;
+    }
+
+    .card-icon {
+      font-size: 40px;
+      color: #007bff;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Cabeçalho -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Painel de Controle</a>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+    <h2 class="text-center mb-4">Acesse as Opções</h2>
+    <div class="row">
+      <!-- Card 1 - Cadastro de Produtos -->
+      <div class="col-md-3 mb-4">
+        <div class="card shadow-lg">
+          <div class="card-body">
+            <i class="fas fa-cogs card-icon"></i>
+            <h5 style="font-size: 15px;" class="card-title">Cadastro de Produtos</h5>
+            <a href="{% url 'cadastroproduto' %}" class="btn btn-primary btn-sm">Acessar</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 - Cadastro de Fornecedores -->
+      <div class="col-md-3 mb-4">
+        <div class="card shadow-lg">
+          <div class="card-body">
+            <i class="fas fa-truck card-icon"></i>
+            <h5 style="font-size: 15px;" class="card-title">Cadastro de Fornecedores</h5>
+            <a href="{% url 'cadastrofornecedor' %}" class="btn btn-primary btn-sm">Acessar</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 - Cadastro de Clientes -->
+      <div class="col-md-3 mb-4">
+        <div class="card shadow-lg">
+          <div class="card-body">
+            <i class="fas fa-users card-icon"></i>
+            <h5 style="font-size: 15px;" class="card-title">Cadastro de Clientes</h5>
+            <a href="{% url 'cadastrocliente' %}" class="btn btn-primary btn-sm">Acessar</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4 - Cadastro de Vendas e Compras -->
+      <div class="col-md-3 mb-4">
+        <div class="card shadow-lg">
+          <div class="card-body">
+            <i class="fas fa-exchange-alt card-icon"></i>
+            <h5 style="font-size: 15px;" class="card-title">Cadastro de Vendas e Compras</h5>
+            <a href="{% url 'cadastrocompra' %}" class="btn btn-primary btn-sm">Acessar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Segunda Linha de Cards -->
+    <div class="row">
+      <!-- Card 5 - Consulta de Produtos -->
+      <div class="col-md-3 mb-4">
+        <div class="card shadow-lg">
+          <div class="card-body">
+            <i class="fas fa-search card-icon"></i>
+            <h5 style="font-size: 15px;" class="card-title">Consulta de Produtos/Estoque</h5>
+            <a href="{% url 'consultaproduto' %}" class="btn btn-primary btn-sm">Acessar</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 6 - Consulta de Clientes -->
+      <div class="col-md-3 mb-4">
+        <div class="card shadow-lg">
+          <div class="card-body">
+            <i class="fas fa-search card-icon"></i>
+            <h5 style="font-size: 15px;" class="card-title">Consulta de Clientes</h5>
+            <a href="{% url 'consultacliente'%}" class="btn btn-primary btn-sm">Acessar</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 7 - Consulta de Fornecedores -->
+      <div class="col-md-3 mb-4">
+        <div class="card shadow-lg">
+          <div class="card-body">
+            <i class="fas fa-search card-icon"></i>
+            <h5 style="font-size: 15px;" class="card-title">Consulta de Fornecedores</h5>
+            <a href="{% url 'consultafornecedor'%}" class="btn btn-primary btn-sm">Acessar</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 8 - Consulta de Vendas e Compras -->
+      <div class="col-md-3 mb-4">
+        <div class="card shadow-lg">
+          <div class="card-body">
+            <i class="fas fa-search card-icon"></i>
+            <h5 style="font-size: 15px;" class="card-title">Consulta de Vendas e Compras</h5>
+            <a href="{% url 'consultavenda'%}" class="btn btn-primary btn-sm">Acessar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script do Bootstrap -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

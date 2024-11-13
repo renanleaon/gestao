@@ -11,3 +11,6 @@ Quit the server with CONTROL-C.
 Not Found: /favicon.ico
 [13/Nov/2024 04:09:46] "GET /favicon.ico HTTP/1.1" 404 4644
 [13/Nov/2024 04:10:01] "GET /cadastrofornecedor/ HTTP/1.1" 200 1677
+[13/Nov/2024 04:56:36] "GET /consultaproduto/ HTTP/1.1" 200 1208
+[13/Nov/2024 04:58:24] "GET /consultaproduto/ HTTP/1.1" 200 1208
+[13/Nov/2024 04:58:26] "GET /consultaproduto/ HTTP/1.1" 200 1208

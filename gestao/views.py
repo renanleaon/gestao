@@ -9,18 +9,19 @@ from django.views.decorators.csrf import csrf_exempt
 def index(request):
     return render(request, 'gestao/index.html')
 
+
 def cadastrofornecedor(request):
     if request.method == 'POST':
         form = FornecedorForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, "Fornecedor cadastrado com sucesso!")
-            return render(request, 'gestao/cadastro_fornecedor.html')  # Redireciona para a página inicial ou outra página desejada
         else:
             messages.error(request, "Erro ao cadastrar fornecedor. Verifique os dados informados.")
     else:
         form = FornecedorForm()
     return render(request, 'gestao/cadastro_fornecedor.html', {'form': form})
+
    
 
 def cadastroproduto(request):
@@ -29,12 +30,12 @@ def cadastroproduto(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Produto cadastrado com sucesso!")
-            return render(request, 'gestao/cadastro_produto.html')  # Redireciona para a página inicial ou outra página desejada
+            return render(request, 'gestao/cadastro_produto.html',{'form': form, 'fornecedores': Fornecedor.objects.all()})  # Redireciona para a página inicial ou outra página desejada
         else:
             messages.error(request, "Erro ao cadastrar produto. Verifique os dados informados.")
     else:
         form = ProdutoForm()    
-        return render(request, 'gestao/cadastro_produto.html', {'form': form})
+        return render(request, 'gestao/cadastro_produto.html', {'form': form, 'fornecedores': Fornecedor.objects.all()})
 
 
 def cadastrocliente(request):
@@ -43,12 +44,12 @@ def cadastrocliente(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Cliente cadastrado com sucesso!")
-            return render(request, 'gestao/cadastro_cliente.html')  # Redireciona para a página inicial ou outra página desejada
         else:
             messages.error(request, "Erro ao cadastrar cliente. Verifique os dados informados.")
     else:
-        form = ClienteForm()    
+        form = ClienteForm()
     return render(request, 'gestao/cadastro_cliente.html', {'form': form})
+
 
 def cadastrocompra(request):
     clientes = Cliente.objects.all()
@@ -86,6 +87,9 @@ def consultaproduto(request):
     produto = Produto.objects.all()
     return render(request, 'gestao/consulta_produto.html', {'produto': produto})
 
+
+# Excluir ou alterar dados PRODUTOS
+
 def editar_produto(request, id):
     produto = get_object_or_404(Produto, id=id)
     if request.method == 'POST':
@@ -103,4 +107,29 @@ def excluir_produto(request, id):
         produto.delete()
         return JsonResponse({'success': True})
     return JsonResponse({'success': False})
+
+# Excluir ou alterar dados CLIENTES
+
+def consultacliente(request):
+    clientes = Cliente.objects.all()
+    return render(request, 'gestao/consulta_cliente.html', {'clientes': clientes})
+
+def editar_cliente(request, id):
+    cliente = get_object_or_404(Cliente, id=id)
+    if request.method == 'POST':
+        form = ClienteForm(request.POST, instance=cliente)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+    return JsonResponse({'success': False})
+
+def excluir_cliente(request, id):
+    cliente = get_object_or_404(Cliente, id=id)
+    if request.method == 'POST':
+        cliente.delete()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
+
 

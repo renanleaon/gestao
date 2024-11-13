@@ -1,5 +1,5 @@
 from django.urls import path
-from gestao.views import index, cadastrofornecedor, cadastroproduto, cadastrocliente, consultacliente, consultafornecedor, consultavenda, consultaproduto, cadastrocompra, editar_produto, excluir_produto
+from gestao.views import index, cadastrofornecedor, cadastroproduto, cadastrocliente, consultacliente, consultafornecedor, consultavenda, consultaproduto, cadastrocompra, editar_produto, excluir_produto, editar_cliente, excluir_cliente
 
 
 urlpatterns = [
@@ -14,4 +14,11 @@ urlpatterns = [
     path('consultavenda/', consultavenda, name='consultavenda'),    
     path('editar_produto/<int:id>/', editar_produto, name='editar_produto'),
     path('excluir_produto/<int:id>/', excluir_produto, name='excluir_produto'),
+    path('editar_cliente/<int:id>/', editar_cliente, name='editar_cliente'),
+    path('excluir_cliente/<int:id>/', excluir_cliente, name='excluir_cliente'),
+
+
+
+
+
 ]

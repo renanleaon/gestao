@@ -4,7 +4,7 @@ from .models import Cliente, Fornecedor, Produto, Venda
 class ClienteForm(forms.ModelForm):
     class Meta:
         model = Cliente
-        fields = ['nome', 'cpf', 'telefone', 'email',]
+        fields = ['nome', 'cpf', 'contato', 'telefone', 'email', 'endereco']
 
 class FornecedorForm(forms.ModelForm):
     class Meta:

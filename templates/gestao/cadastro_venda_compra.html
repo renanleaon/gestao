@@ -1,3 +1,6 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,8 +34,34 @@
           </select>
         </div>
         <div class="mb-3">
+          <label for="itens_compra" class="form-label">Itens/Produtos</label>
+          <table id="tabelaItensCompra" class="table">
+            <thead>
+              <tr>
+                <th>Produto</th>
+                <th>Quantidade</th>
+                <th>Preço Unitário</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="text" name="produto_compra[]" class="form-control" required></td>
+                <td><input type="number" name="quantidade_compra[]" class="form-control quantidade_compra" required
+                    oninput="atualizarValorTotalCompra()"></td>
+                <td><input type="number" name="preco_compra[]" class="form-control preco_compra" required step="0.01"
+                    oninput="atualizarValorTotalCompra()"></td>
+                <td><button type="button" class="btn btn-danger" onclick="removerLinha(this)">Remover</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <button type="button" class="btn btn-secondary" onclick="adicionarLinha('tabelaItensCompra')">Adicionar
+            Produto</button>
+        </div>
+        <div class="mb-3">
           <label for="valor_total_compra" class="form-label">Valor Total</label>
-          <input type="number" id="valor_total_compra" name="valor_total" class="form-control" required step="0.01">
+          <input type="number" id="valor_total_compra" name="valor_total" class="form-control" required step="0.01"
+            readonly>
         </div>
         <button type="submit" class="btn btn-primary">Cadastrar Compra</button>
       </form>
@@ -51,8 +80,34 @@
           </select>
         </div>
         <div class="mb-3">
+          <label for="itens_venda" class="form-label">Itens/Produtos</label>
+          <table id="tabelaItensVenda" class="table">
+            <thead>
+              <tr>
+                <th>Produto</th>
+                <th>Quantidade</th>
+                <th>Preço Unitário</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="text" name="produto_venda[]" class="form-control" required></td>
+                <td><input type="number" name="quantidade_venda[]" class="form-control quantidade_venda" required
+                    oninput="atualizarValorTotalVenda()"></td>
+                <td><input type="number" name="preco_venda[]" class="form-control preco_venda" required step="0.01"
+                    oninput="atualizarValorTotalVenda()"></td>
+                <td><button type="button" class="btn btn-danger" onclick="removerLinha(this)">Remover</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <button type="button" class="btn btn-secondary" onclick="adicionarLinha('tabelaItensVenda')">Adicionar
+            Produto</button>
+        </div>
+        <div class="mb-3">
           <label for="valor_total_venda" class="form-label">Valor Total</label>
-          <input type="number" id="valor_total_venda" name="valor_total" class="form-control" required step="0.01">
+          <input type="number" id="valor_total_venda" name="valor_total" class="form-control" required step="0.01"
+            readonly>
         </div>
         <button type="submit" class="btn btn-primary">Cadastrar Venda</button>
       </form>
@@ -63,7 +118,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- Script para mostrar o formulário selecionado -->
+  <!-- Script para mostrar o formulário selecionado e adicionar/remoção de linhas -->
   <script>
     function mostrarFormulario() {
       var selecao = document.getElementById("selecaoTipo").value;
@@ -77,6 +132,41 @@
         formCadastroCompras.style.display = "none";
         formCadastroVendas.style.display = "block";
       }
+    }
+
+    function adicionarLinha(tabelaId) {
+      var tabela = document.getElementById(tabelaId).getElementsByTagName('tbody')[0];
+      var novaLinha = tabela.insertRow();
+
+      novaLinha.innerHTML = `
+        <tr>
+          <td><input type="text" name="produto_${tabelaId === 'tabelaItensCompra' ? 'compra' : 'venda'}[]" class="form-control" required></td>
+          <td><input type="number" name="quantidade_${tabelaId === 'tabelaItensCompra' ? 'compra' : 'venda'}[]" class="form-control ${tabelaId === 'tabelaItensCompra' ? 'quantidade_compra' : 'quantidade_venda'}" required oninput="atualizarValorTotal('${tabelaId === 'tabelaItensCompra' ? 'Compra' : 'Venda'}')"></td>
+          <td><input type="number" name="preco_${tabelaId === 'tabelaItensCompra' ? 'compra' : 'venda'}[]" class="form-control ${tabelaId === 'tabelaItensCompra' ? 'preco_compra' : 'preco_venda'}" required step="0.01" oninput="atualizarValorTotal('${tabelaId === 'tabelaItensCompra' ? 'Compra' : 'Venda'}')"></td>
+          <td><button type="button" class="btn btn-danger" onclick="removerLinha(this)">Remover</button></td>
+        </tr>
+      `;
+    }
+
+    function removerLinha(botao) {
+      var linha = botao.parentNode.parentNode;
+      linha.parentNode.removeChild(linha);
+      atualizarValorTotalCompra();
+      atualizarValorTotalVenda();
+    }
+
+    function atualizarValorTotal(tipo) {
+      var quantidades = document.getElementsByClassName('quantidade_' + tipo.toLowerCase());
+      var precos = document.getElementsByClassName('preco_' + tipo.toLowerCase());
+      var valorTotal = 0;
+
+      for (var i = 0; i < quantidades.length; i++) {
+        var quantidade = parseFloat(quantidades[i].value) || 0;
+        var preco = parseFloat(precos[i].value) || 0;
+        valorTotal += quantidade * preco;
+      }
+
+      document.getElementById('valor_total_' + tipo.toLowerCase()).value = valorTotal.toFixed(2);
     }
 
     // Exibir formulário padrão ao carregar a página

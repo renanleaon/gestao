@@ -12,11 +12,17 @@ class FornecedorForm(forms.ModelForm):
         fields = ['nome', 'contato', 'telefone', 'email', 'endereco',]
 
 class ProdutoForm(forms.ModelForm):
+    fornecedor = forms.ModelChoiceField(queryset=Fornecedor.objects.all(), required=True)
+
     class Meta:
         model = Produto
-        fields = ['nome', 'descricao', 'preco', 'estoque', 'fornecedor' ]
+        fields = ['nome', 'descricao', 'preco', 'estoque', 'fornecedor']
+
 
 class VendaForm(forms.ModelForm):
     class Meta:
         model = Venda
         fields = ['cliente', 'valor_total', ]
+
+
+        

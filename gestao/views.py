@@ -1,15 +1,10 @@
 from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from gestao.models import Fornecedor, Produto, Cliente, Compra, Venda, ItemCompra, ItemVenda
 from .forms import ClienteForm, FornecedorForm, ProdutoForm, VendaForm
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-
-# def index(request):
-#     books = Book.objects.all()
-#     genre = Genre.objects.all()  # Pegando todos os gêneros
-#     return render(request, 'gestao/index.html', {'cards': books, 'genres': genre})
-
 
 def index(request):
     return render(request, 'gestao/index.html')
@@ -83,60 +78,29 @@ def consultacliente(request):
     cliente = Cliente.objects.all()
     return render(request, 'gestao/consulta_cliente.html', {'clientes' : cliente})
 
-def consultaproduto(request):
-    produto = Produto.objects.all()
-    return render(request, 'gestao/consulta_produto.html', {'produto': produto})
-
 def consultavenda(request):
     venda = Venda.objects.all()
     return render(request, 'gestao/consulta_venda_compra.html', {'venda': venda})
 
+def consultaproduto(request):
+    produto = Produto.objects.all()
+    return render(request, 'gestao/consulta_produto.html', {'produto': produto})
 
-@csrf_exempt  # Para fins de teste, remova em produção ou use o CSRF corretamente.
 def editar_produto(request, id):
+    produto = get_object_or_404(Produto, id=id)
     if request.method == 'POST':
-        try:
-            # Recebe os dados enviados via AJAX
-            nome = request.POST.get('nome')
-            descricao = request.POST.get('descricao')
-            preco = request.POST.get('preco')
-            estoque = request.POST.get('estoque')
-            fornecedor = request.POST.get('fornecedor')
-
-            # Verifica se todos os campos estão preenchidos
-            if not nome or not descricao or not preco or not estoque or not fornecedor:
-                return JsonResponse({'status': 'error', 'message': 'Todos os campos devem ser preenchidos!'}, status=400)
-
-            # Atualiza o produto no banco de dados
-            produto = Produto.objects.get(id=id)
-            produto.nome = nome
-            produto.descricao = descricao
-            produto.preco = preco
-            produto.estoque = estoque
-            produto.fornecedor = fornecedor
-            produto.save()  # Salva as alterações no banco de dados
-
-            return JsonResponse({'status': 'success', 'message': 'Produto atualizado com sucesso!'})
-        
-        except Produto.DoesNotExist:
-            return JsonResponse({'status': 'error', 'message': 'Produto não encontrado!'}, status=404)
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-
-    return JsonResponse({'status': 'error', 'message': 'Método inválido!'}, status=405)
-
+        form = ProdutoForm(request.POST, instance=produto)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+    return JsonResponse({'success': False})
 
 def excluir_produto(request, id):
+    produto = get_object_or_404(Produto, id=id)
     if request.method == 'POST':
-        try:
-            # Tenta encontrar o produto pelo ID e excluir
-            produto = Produto.objects.get(id=id)
-            produto.delete()
+        produto.delete()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
 
-            # Retorna uma resposta JSON de sucesso
-            return JsonResponse({'status': 'success', 'message': 'Produto excluído com sucesso!'})
-
-        except Produto.DoesNotExist:
-            return JsonResponse({'status': 'error', 'message': 'Produto não encontrado!'})
-
-    return JsonResponse({'status': 'error', 'message': 'Método inválido!'})

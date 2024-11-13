@@ -12,7 +12,6 @@ urlpatterns = [
     path('consultacliente/', consultacliente, name='consultacliente'),    
     path('consultafornecedor/', consultafornecedor, name='consultafornecedor'),    
     path('consultavenda/', consultavenda, name='consultavenda'),    
-
     path('editar_produto/<int:id>/', editar_produto, name='editar_produto'),
     path('excluir_produto/<int:id>/', excluir_produto, name='excluir_produto'),
 ]

@@ -72,16 +72,33 @@ def cadastrocompra(request):
     
 
 def consultafornecedor(request):
-    fornecedor = Fornecedor.objects.all()
-    return render(request, 'gestao/consulta_fornecedor.html', {'fornecedor' : fornecedor})
+    fornecedores = Fornecedor.objects.all()
+    return render(request, 'gestao/consulta_fornecedor.html', {'fornecedores': fornecedores})
+
+def editar_fornecedor(request, id):
+    if request.method == 'POST':
+        fornecedor = get_object_or_404(Fornecedor, id=id)
+        form = FornecedorForm(request.POST, instance=fornecedor)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+    return JsonResponse({'success': False, 'errors': 'Invalid request method'})
+
+def excluir_fornecedor(request, id):
+    if request.method == 'POST':
+        fornecedor = get_object_or_404(Fornecedor, id=id)
+        fornecedor.delete()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False, 'errors': 'Invalid request method'})
+
+
 
 def consultacliente(request):
     cliente = Cliente.objects.all()
     return render(request, 'gestao/consulta_cliente.html', {'clientes' : cliente})
 
-def consultavenda(request):
-    venda = Venda.objects.all()
-    return render(request, 'gestao/consulta_venda_compra.html', {'venda': venda})
 
 def consultaproduto(request):
     produto = Produto.objects.all()
@@ -133,3 +150,46 @@ def excluir_cliente(request, id):
     return JsonResponse({'success': False})
 
 
+
+
+
+def consultas_vendas_compras(request):
+    vendas = Venda.objects.all()
+    compras = Compra.objects.all()
+    return render(request, 'gestao/consulta_venda_compra.html', {'vendas': vendas, 'compras': compras})
+
+def editar_venda(request, id):
+    if request.method == 'POST':
+        venda = get_object_or_404(Venda, id=id)
+        form = VendaForm(request.POST, instance=venda)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+    return JsonResponse({'success': False, 'errors': 'Invalid request method'})
+
+def excluir_venda(request, id):
+    if request.method == 'POST':
+        venda = get_object_or_404(Venda, id=id)
+        venda.delete()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False, 'errors': 'Invalid request method'})
+
+def editar_compra(request, id):
+    if request.method == 'POST':
+        compra = get_object_or_404(Compra, id=id)
+        form = CompraForm(request.POST, instance=compra)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+    return JsonResponse({'success': False, 'errors': 'Invalid request method'})
+
+def excluir_compra(request, id):
+    if request.method == 'POST':
+        compra = get_object_or_404(Compra, id=id)
+        compra.delete()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False, 'errors': 'Invalid request method'})

@@ -4,8 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cadastro de Fornecedores</title>
+  <title>Consulta de Fornecedores</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Inclusão do jQuery -->
 </head>
 
 <body>
@@ -19,27 +20,157 @@
           <th>Telefone</th>
           <th>Email</th>
           <th>Endereço</th>
+          <th>Ações</th>
         </tr>
       </thead>
       <tbody>
-        {% for fornecedor in fornecedor %}
-        <tr>
-          <td>{{ fornecedor.nome }}</td>
-          <td>{{ fornecedor.contato }}</td>
-          <td>{{ fornecedor.telefone }}</td>
-          <td>{{ fornecedor.email }}</td>
-          <td>{{ fornecedor.endereco }}</td>
+        {% for fornecedor in fornecedores %}
+        <tr id="fornecedor-{{ fornecedor.id }}">
+          <td class="nome">{{ fornecedor.nome }}</td>
+          <td class="contato">{{ fornecedor.contato }}</td>
+          <td class="telefone">{{ fornecedor.telefone }}</td>
+          <td class="email">{{ fornecedor.email }}</td>
+          <td class="endereco">{{ fornecedor.endereco }}</td>
+          <td>
+            <button class="btn btn-warning btn-sm editar-btn"
+              onclick="editarFornecedor({{ fornecedor.id }})">Editar</button>
+            <button class="btn btn-danger btn-sm excluir-btn"
+              onclick="excluirFornecedor({{ fornecedor.id }})">Excluir</button>
+          </td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="5" class="text-center">Nenhum fornecedor cadastrado.</td>
+          <td colspan="6" class="text-center">Nenhum fornecedor cadastrado.</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
     <a href="{% url 'index' %}" class="btn btn-secondary">Voltar</a>
   </div>
+
+  <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="editForm" method="post">
+          {% csrf_token %}
+          <div class="modal-header">
+            <h5 class="modal-title" id="editModalLabel">Editar Fornecedor</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" name="id" id="fornecedorId">
+            <div class="mb-3">
+              <label for="nome" class="form-label">Nome</label>
+              <input type="text" class="form-control" id="nome" name="nome">
+            </div>
+            <div class="mb-3">
+              <label for="contato" class="form-label">Contato</label>
+              <input type="text" class="form-control" id="contato" name="contato">
+            </div>
+            <div class="mb-3">
+              <label for="telefone" class="form-label">Telefone</label>
+              <input type="text" class="form-control" id="telefone" name="telefone">
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email">
+            </div>
+            <div class="mb-3">
+              <label for="endereco" class="form-label">Endereço</label>
+              <input type="text" class="form-control" id="endereco" name="endereco">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Função para editar o fornecedor
+    function editarFornecedor(id) {
+      const linhaFornecedor = document.getElementById('fornecedor-' + id);
+      const nome = linhaFornecedor.querySelector('.nome').innerHTML;
+      const contato = linhaFornecedor.querySelector('.contato').innerHTML;
+      const telefone = linhaFornecedor.querySelector('.telefone').innerHTML;
+      const email = linhaFornecedor.querySelector('.email').innerHTML;
+      const endereco = linhaFornecedor.querySelector('.endereco').innerHTML;
+
+      document.getElementById('fornecedorId').value = id;
+      document.getElementById('nome').value = nome;
+      document.getElementById('contato').value = contato;
+      document.getElementById('telefone').value = telefone;
+      document.getElementById('email').value = email;
+      document.getElementById('endereco').value = endereco;
+
+      const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+      editModal.show();
+    }
+
+    // Função para submeter o formulário de edição
+    document.getElementById('editForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const id = document.getElementById('fornecedorId').value;
+      const nome = document.getElementById('nome').value;
+      const contato = document.getElementById('contato').value;
+      const telefone = document.getElementById('telefone').value;
+      const email = document.getElementById('email').value;
+      const endereco = document.getElementById('endereco').value;
+
+      $.ajax({
+        url: `/editar_fornecedor/${id}/`,
+        type: 'POST',
+        data: {
+          'id': id,
+          'nome': nome,
+          'contato': contato,
+          'telefone': telefone,
+          'email': email,
+          'endereco': endereco,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function (response) {
+          if (response.success) {
+            const linhaFornecedor = document.getElementById('fornecedor-' + id);
+            linhaFornecedor.querySelector('.nome').innerHTML = nome;
+            linhaFornecedor.querySelector('.contato').innerHTML = contato;
+            linhaFornecedor.querySelector('.telefone').innerHTML = telefone;
+            linhaFornecedor.querySelector('.email').innerHTML = email;
+            linhaFornecedor.querySelector('.endereco').innerHTML = endereco;
+            bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+          } else {
+            alert('Erro ao salvar o fornecedor: ' + JSON.stringify(response.errors));
+          }
+        }
+      });
+    });
+
+    // Função para excluir o fornecedor
+    function excluirFornecedor(id) {
+      if (confirm('Tem certeza que deseja excluir este fornecedor?')) {
+        $.ajax({
+          url: `/excluir_fornecedor/${id}/`,
+          type: 'POST',
+          data: {
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+          },
+          success: function (response) {
+            if (response.success) {
+              document.getElementById('fornecedor-' + id).remove();
+            } else {
+              alert('Erro ao excluir o fornecedor.');
+            }
+          }
+        });
+      }
+    }
+  </script>
 </body>
 
 </html>

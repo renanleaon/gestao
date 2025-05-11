@@ -1,5 +1,5 @@
 from django.urls import path
-from gestao.views import index, cadastrofornecedor, cadastroproduto, cadastrocliente, consultacliente, consultafornecedor, consultaproduto, cadastrocompra, editar_produto, excluir_produto, editar_cliente, excluir_cliente, editar_fornecedor, excluir_fornecedor, consultas_vendas_compras, editar_compra, editar_venda, excluir_compra, excluir_venda
+from gestao.views import index, cadastrofornecedor, cadastroproduto, cadastrocliente, consultacliente, consultafornecedor, consultaproduto, cadastrocompra, editar_produto, excluir_produto, editar_cliente, excluir_cliente, editar_fornecedor, excluir_fornecedor, consultas_vendas_compras, editar_compra, editar_venda, excluir_compra, excluir_venda, consulta_github
 
 
 urlpatterns = [
@@ -26,7 +26,6 @@ urlpatterns = [
     path('editar_compra/<int:id>/', editar_compra, name='editar_compra'),
     path('excluir_compra/<int:id>/', excluir_compra, name='excluir_compra'),
 
-
-
+    path('consulta_github/', consulta_github, name='consulta_github'),
 
 ]

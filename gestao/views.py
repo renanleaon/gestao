@@ -5,6 +5,7 @@ from .forms import ClienteForm, FornecedorForm, ProdutoForm, VendaForm
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+import requests
 
 def index(request):
     return render(request, 'gestao/index.html')
@@ -193,3 +194,18 @@ def excluir_compra(request, id):
         compra.delete()
         return JsonResponse({'success': True})
     return JsonResponse({'success': False, 'errors': 'Invalid request method'})
+
+def consulta_github(request):
+    github_user = request.GET.get('usuario', 'renanleaon')  # Valor padrão se não for enviado nenhum usuário
+    url = f'https://api.github.com/users/{github_user}'
+    
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            dados = response.json()
+        else:
+            dados = {'erro': 'Usuário não encontrado ou erro na API.'}
+    except requests.RequestException:
+        dados = {'erro': 'Erro ao se conectar com o GitHub.'}
+
+    return render(request, 'gestao/consulta_github.html', {'dados': dados, 'usuario': github_user})

@@ -6,6 +6,8 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import requests
+import os
+from django.conf import settings
 
 def index(request):
     return render(request, 'gestao/index.html')
@@ -196,16 +198,107 @@ def excluir_compra(request, id):
     return JsonResponse({'success': False, 'errors': 'Invalid request method'})
 
 def consulta_github(request):
-    github_user = request.GET.get('usuario', 'renanleaon')  # Valor padrão se não for enviado nenhum usuário
+    # Define valor padrão se não for enviado nenhum usuário
+    github_user = request.GET.get('usuario', 'octocat') 
     url = f'https://api.github.com/users/{github_user}'
     
     try:
+        #Faz requisição para a api do GitHub de acordo com o github_user
         response = requests.get(url)
+
+        #Se houver sucesso retorna os dados
         if response.status_code == 200:
             dados = response.json()
+
+        #Senão, retorna erro
         else:
             dados = {'erro': 'Usuário não encontrado ou erro na API.'}
+
+    #Se houver falhar na requisição retorna erro
     except requests.RequestException:
         dados = {'erro': 'Erro ao se conectar com o GitHub.'}
 
+    #Havendo sucesso retornará os dados prontos para consumo
     return render(request, 'gestao/consulta_github.html', {'dados': dados, 'usuario': github_user})
+
+def consulta_google_maps(request):
+    #Caso a consulta seja por endereço recebe o valor enviado para consulta
+    endereco = request.GET.get('endereco')
+
+    #Caso a consulta seja por coordenadas recebe o valor enviado para consulta
+    lat = request.GET.get("lat")
+    lng = request.GET.get("lng")
+    resultado = {}
+    endereco_formatado = None
+
+    #Recebe a chave da API do Google Maps configurada no .env
+    api_key = os.environ.get("GOOGLE_MAPS_API_KEY", "")
+
+    #Valida se existe a chave no .env
+    if not api_key:
+        return JsonResponse({'erro': 'Chave da API do Google não configurada.'})
+
+    try:
+        #Se a consulta for por endereço
+        if endereco:
+            url = "https://maps.googleapis.com/maps/api/geocode/json"
+            params = {'address': endereco, 'key': api_key}
+
+        #Se a consulta for por coordenadas
+        elif lat and lng:
+            url = "https://maps.googleapis.com/maps/api/geocode/json"
+            params = {'latlng': f"{lat},{lng}", 'key': api_key}
+
+        #Senão houverem valores corretos para consultar retornará erro
+        else:
+            return render(request, 'gestao/consulta_google_maps.html', {
+                'erro': 'É necessário informar um endereço ou coordenadas.'
+            })
+
+        #Armazena retorno da requisição
+        response = requests.get(url, params=params)
+
+        #Se houver sucesso na consulta
+        if response.status_code == 200:
+
+            #Retorna o resultado formatado
+            resultado = response.json()
+
+            #Consigura validação e formatação para os dados de retorno
+            if 'results' in resultado and resultado['results']:
+                endereco_formatado = resultado['results'][0]['formatted_address']
+                location = resultado['results'][0]['geometry']['location']
+
+                #Formata coordenadas
+                coordenadas_formatada = format_location(location)
+
+            #Se não houverem dados encontrados no retorno da requisição
+            else:
+                resultado = {'erro': 'Nenhum dado encontrado para as coordenadas informadas.'}
+
+        #Se houver falha ao tentar consultar
+        else:
+            resultado = {'erro': 'Erro ao consultar a API do Google Maps.'}
+
+    #Retorna erro quando houver problemas com conexão
+    except requests.RequestException as e:
+        resultado = {'erro': f'Erro de conexão: {str(e)}'}
+
+    #Havendo sucesso retorna os dados para serem consumidos
+    return render(request, 'gestao/consulta_google_maps.html', {
+        'resultado': resultado,
+        'coordenadas': coordenadas_formatada,
+        'endereco_formatado': endereco_formatado,
+        'lat': lat,
+        'lng': lng,
+        'endereco': endereco,
+        'google_maps_api_key': settings.GOOGLE_MAPS_API_KEY
+})
+
+# Função responsável por formatar os campos de latitude e longitude
+def format_location(location):
+    return {
+        'lat': f"{location['lat']:.6f}".replace(",", "."),
+        'lng': f"{location['lng']:.6f}".replace(",", ".")
+    }
+
